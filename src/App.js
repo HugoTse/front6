@@ -7,13 +7,25 @@ import {
   Image,
   View,
   Card,
-  Grid
+  Grid,
+  TextField
 } from "@aws-amplify/ui-react";
 
 import { Amplify, API, Storage } from 'aws-amplify';
 import React, { useState, useEffect } from "react";
+import TextareaAutosize from 'react-textarea-autosize';
+
 
 function App({ signOut }) {
+  const[cid, setCid] = useState('');
+  const[timestamp, setTimestamp] = useState('');
+  const[thand, setThand] = useState('');
+  const[fname, setFname] = useState('');
+  const[lname, setLname] = useState('');
+  const[dob, setDob] = useState('');
+  const[region, setRegion] = useState('');
+  const[text, setText] = useState('');
+  const[ir, setIr] = useState('');
 
   // For uploadImage
   async function onChange(e) {
@@ -23,21 +35,117 @@ function App({ signOut }) {
     // Set the variable file to the uploaded file
     const file = e.target.files[0];
     // Set the key for the file
-    const imageKey = 'image/raw/' + file.name;
-    // setIr(imageKey);
+    const imageKey = file.name;
+    setIr(imageKey);
     // Log the key
     console.log(imageKey);
-    // try {
-    //   // Place the image in the bucket
-    //   await Storage.put(imageKey, file, {
-    //     contentType: "image/png", // contentType is optional
-    //   })
-    //   // This returns the key
-    //   .then((res) => 
-    //     console.log(res)
-    //   );
-    // } catch (error) {
-    //   console.log("Error uploading file: ", error);
+    // instantiate a request url
+    var url = "https://ini5trtk7b.execute-api.us-west-2.amazonaws.com/v0/uploadimage/20220725s3bucket/image%2Fraw%2F" + imageKey
+    console.log(url);
+    // instantiate a headers object
+    var myHeaders = new Headers();
+    // add content type header to object
+    myHeaders.append("Content-Type", "image/*");
+    // create a JSON object with parameters for API call and store in a variable
+    var requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: file,
+      redirect: "follow",
+    };
+    // make API call with parameters and use promises to get response
+    fetch(
+      url, requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => alert(JSON.parse(result).body))
+      .catch((error) => console.log("error", error));
+    // alert('your file has been uploaded');
+  }
+
+  // For submitting the comment
+  async function Comment(e) {
+    e.preventDefault();
+    console.log('Campaign ID: ' + cid,
+                ', Timestamp: ' + timestamp,
+                ', Twitter Handle: ' + thand,
+                ', First Name: ' + fname,
+                ', Last Name: ' + lname,
+                ', Date of Birth: ' + dob,
+                ', Region: ' + region,
+                ', Text: ' + text,
+                ', Image Reference: ' + ir);
+    // If the comment doesn't include an image
+    if(ir == ''){
+      // instantiate a request url
+      var jsonKey = cid + ' ' + timestamp + ' ' + thand
+      var url = "https://ini5trtk7b.execute-api.us-west-2.amazonaws.com/v2/submitcomment/20220725s3bucket/input%2F" + jsonKey
+      console.log(url);
+      // instantiate a headers object
+      var myHeaders = new Headers();
+      // add content type header to object
+      myHeaders.append("Content-Type", "application/json");
+      var data = JSON.stringify({ "userMetaData" : { campaign_id: cid, 
+                                                    timestamp: timestamp,
+                                                    twitter_handle: thand,
+                                                    first_name: fname,
+                                                    last_name: lname,
+                                                    date_of_birth: dob,
+                                                    region: region
+                                                  },
+                                  "data": { text: text } 
+                                });
+      // create a JSON object with parameters for API call and store in a variable
+      var requestOptions = {
+        method: "PUT",
+        headers: myHeaders,
+        body: data,
+        redirect: "follow",
+      };
+      // make API call with parameters and use promises to get response
+      fetch(
+        url, requestOptions
+      )
+        .then((response) => response.text())
+        .then((result) => alert(JSON.parse(result).body))
+        .catch((error) => console.log("error", error));
+    // If the comment includes an image
+    } else {
+      // instantiate a request url
+      var jsonKey = cid + ' ' + timestamp + ' ' + thand
+      var url = "https://ini5trtk7b.execute-api.us-west-2.amazonaws.com/v1/processimage/20220725s3bucket/input%2F" + jsonKey
+      console.log(url);
+      // instantiate a headers object
+      var myHeaders = new Headers();
+      // add content type header to object
+      myHeaders.append("Content-Type", "application/json");
+      var data = JSON.stringify({ "userMetaData" : { campaign_id: cid, 
+                                                    timestamp: timestamp,
+                                                    twitter_handle: thand,
+                                                    first_name: fname,
+                                                    last_name: lname,
+                                                    date_of_birth: dob,
+                                                    region: region
+                                                  },
+                                  "data": { text: text,
+                                            image_reference: ir
+                                          } 
+                                });
+      // create a JSON object with parameters for API call and store in a variable
+      var requestOptions = {
+        method: "PUT",
+        headers: myHeaders,
+        body: data,
+        redirect: "follow",
+      };
+      // make API call with parameters and use promises to get response
+      fetch(
+        url, requestOptions
+      )
+        .then((response) => response.text())
+        .then((result) => alert(JSON.parse(result).body))
+        .catch((error) => console.log("error", error));
+    }
   }
 
 
@@ -56,16 +164,99 @@ function App({ signOut }) {
           <input
             type="file"
             onChange={onChange}
-          />
-        </div>
+        />
 
         {/* Inputs */}
-        <Heading level={3}>Comment Metadata</Heading> 
+        <Heading level={4}>Comment Metadata</Heading> 
 
+        <form onSubmit={Comment}>
+          <div className='formDiv'>
+            {/* Campaign ID */}
+            <input
+              required
+              className='input'
+              onChange={e => setCid(e.target.value)}
+              placeholder="Campaign ID"
+            />
+          </div>
+          <div className='formDiv'>
+            {/* Timestamp */}
+            <input
+              required
+              className='input'
+              onChange={e => setTimestamp(e.target.value)}
+              placeholder="Timestamp"
+            />
+          </div>
+          <div className='formDiv'>
+            {/* Twitter Handle */}
+            <input
+              required
+              className='input'
+              onChange={e => setThand(e.target.value)}
+              placeholder="Twitter Handle"
+            />
+          </div>
+          <div className='formDiv'>
+            {/* First Name */}
+            <input
+              required
+              className='input'
+              onChange={e => setFname(e.target.value)}
+              placeholder="First Name"
+            />
+          </div>
+          <div className='formDiv'>
+            {/* Last Name */}
+            <input
+              required
+              className='input'
+              onChange={e => setLname(e.target.value)}
+              placeholder="Last Name"
+            />
+          </div>
+          <div className='formDiv'>
+            {/* Date of Birth */}
+            <input
+              required
+              className='input'
+              onChange={e => setDob(e.target.value)}
+              placeholder="Date of Birth"
+            />
+          </div>
+          <div className='formDiv'>
+            {/* Region */}
+            <input
+              required
+              className='input'
+              onChange={e => setRegion(e.target.value)}
+              placeholder="Region"
+            />
+          </div>
+          <div className='formDiv'>
+            {/* Text */}
+             <TextareaAutosize
+                className='responsiveTA input'
+                placeholder="Text"
+                onChange={e => setText(e.target.value)}
+              />
+          </div>
+
+          {/* Submit button */}
+          <div className='formDiv'>
+            <Button type='submit'>SUBMIT</Button>
+          </div>
+
+        </form>
+
+       
 
         <div className='formDiv'>
           <Button onClick={signOut}>Sign Out</Button>
         </div>
+
+      </div>
+    
       </div>
    
 

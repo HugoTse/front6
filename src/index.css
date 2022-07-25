@@ -54,3 +54,22 @@ code {
 .mainContent{
   text-align: center;
 }
+
+.formDiv {
+  font-size: 20px;
+  margin-bottom: 2%;
+}
+
+.input {
+  width: 60%; 
+  border-radius: 5px;
+  margin-top: 1%;
+}
+
+.responsiveTA {
+  background-color: transparent;
+  resize: none;
+  border-radius: 5px;
+}
+
+
