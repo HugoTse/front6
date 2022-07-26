@@ -78,7 +78,7 @@ function App({ signOut }) {
     // If the comment doesn't include an image
     if(ir == ''){
       // instantiate a request url
-      var jsonKey = cid + ' ' + timestamp + ' ' + thand
+      var jsonKey = cid + '_' + timestamp + '_' + thand + '.json'
       var url = "https://ini5trtk7b.execute-api.us-west-2.amazonaws.com/v2/submitcomment/20220725s3bucket/input%2F" + jsonKey
       console.log(url);
       // instantiate a headers object
@@ -103,16 +103,16 @@ function App({ signOut }) {
         redirect: "follow",
       };
       // make API call with parameters and use promises to get response
-      fetch(
+      await fetch(
         url, requestOptions
       )
         .then((response) => response.text())
         .then((result) => alert(JSON.parse(result).body))
         .catch((error) => console.log("error", error));
-    // If the comment includes an image
-    } else {
+      // If the comment includes an image
+      } else {
       // instantiate a request url
-      var jsonKey = cid + ' ' + timestamp + ' ' + thand
+      var jsonKey = cid + '_' + timestamp + '_' + thand + '.json'
       var url = "https://ini5trtk7b.execute-api.us-west-2.amazonaws.com/v1/processimage/20220725s3bucket/input%2F" + jsonKey
       console.log(url);
       // instantiate a headers object
@@ -139,13 +139,22 @@ function App({ signOut }) {
         redirect: "follow",
       };
       // make API call with parameters and use promises to get response
-      fetch(
+      await fetch(
         url, requestOptions
       )
         .then((response) => response.text())
         .then((result) => alert(JSON.parse(result).body))
         .catch((error) => console.log("error", error));
     }
+    setCid('');
+    setTimestamp('');
+    setThand('');
+    setFname('');
+    setLname('');
+    setDob('');
+    setRegion('');
+    setText('');
+    setIr('');
   }
 
 
@@ -155,16 +164,19 @@ function App({ signOut }) {
         columnStart="1"
         columnEnd="-1"
       >
-       <Heading level={1}>Nautilus Marketing</Heading> 
+       <Heading level={1}>Nautilus Marketing: Detecting Sentiment</Heading> 
       </Card>
 
+      <br/>
       <div className='mainContent'>
         {/* Upload Image */}
-        <div className='formDiv'>
+        <div className='uploadDiv'>
           <input
             type="file"
             onChange={onChange}
         />
+        <br/>
+        <br/>
 
         {/* Inputs */}
         <Heading level={4}>Comment Metadata</Heading> 
@@ -177,6 +189,7 @@ function App({ signOut }) {
               className='input'
               onChange={e => setCid(e.target.value)}
               placeholder="Campaign ID"
+              value={cid}
             />
           </div>
           <div className='formDiv'>
@@ -186,6 +199,7 @@ function App({ signOut }) {
               className='input'
               onChange={e => setTimestamp(e.target.value)}
               placeholder="Timestamp"
+              value={timestamp}
             />
           </div>
           <div className='formDiv'>
@@ -195,6 +209,7 @@ function App({ signOut }) {
               className='input'
               onChange={e => setThand(e.target.value)}
               placeholder="Twitter Handle"
+              value={thand}
             />
           </div>
           <div className='formDiv'>
@@ -204,6 +219,7 @@ function App({ signOut }) {
               className='input'
               onChange={e => setFname(e.target.value)}
               placeholder="First Name"
+              value={fname}
             />
           </div>
           <div className='formDiv'>
@@ -213,6 +229,7 @@ function App({ signOut }) {
               className='input'
               onChange={e => setLname(e.target.value)}
               placeholder="Last Name"
+              value={lname}
             />
           </div>
           <div className='formDiv'>
@@ -222,6 +239,7 @@ function App({ signOut }) {
               className='input'
               onChange={e => setDob(e.target.value)}
               placeholder="Date of Birth"
+              value={dob}
             />
           </div>
           <div className='formDiv'>
@@ -231,14 +249,18 @@ function App({ signOut }) {
               className='input'
               onChange={e => setRegion(e.target.value)}
               placeholder="Region"
+              value={region}
             />
           </div>
+
+          <Heading level={4}>Comment Text</Heading> 
           <div className='formDiv'>
             {/* Text */}
              <TextareaAutosize
                 className='responsiveTA input'
                 placeholder="Text"
                 onChange={e => setText(e.target.value)}
+                value={text}
               />
           </div>
 
