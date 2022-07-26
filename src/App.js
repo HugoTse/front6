@@ -8,7 +8,20 @@ import {
   View,
   Card,
   Grid,
-  TextField
+  TextField,
+  Alert,
+  ToggleButton,
+  Flex,
+  Table,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableBody,
+  ThemeProvider,
+  Theme,
+  TextAreaField,
+  SelectField,
+  useTheme,
 } from "@aws-amplify/ui-react";
 
 import { Amplify, API, Storage } from 'aws-amplify';
@@ -158,6 +171,64 @@ function App({ signOut }) {
   }
 
 
+  // For Gobjs
+  const [gobjs, setGobjs] = useState([]);
+
+  // Fetch the gobjs in the table
+  async function fetchGobjs(){
+    const headers = {
+      "Content-Type": "application, json",
+    }
+    const apiResponse = await fetch('https://sku06p2ar3.execute-api.us-west-2.amazonaws.com/v0/read', {headers} )
+    const apiResponseJSON = await apiResponse.json()
+    const gs = apiResponseJSON.body
+    // console.log(apiResponseJSON)
+    console.log(gs)
+    setGobjs([...gs])
+  }
+  // Fetch the gobjs in the table: UseEffect
+  useEffect(() => { 
+    async function fetc(){
+      const headers = {
+        "Content-Type": "application, json",
+      }
+      const apiResponse = await fetch('https://sku06p2ar3.execute-api.us-west-2.amazonaws.com/v0/read', {headers} )
+      const apiResponseJSON = await apiResponse.json()
+      const gs = apiResponseJSON.body
+      // console.log(apiResponseJSON)
+      console.log("This is gs: " + gs)
+      setGobjs([...gs])
+    }
+    fetc()
+  }, []);
+
+  // Table Theme
+  const theme: Theme = {
+    name: "table-theme",
+    tokens: {
+      components: {
+        table: {
+          row: {
+            hover: {
+              backgroundColor: { value: "{colors.blue.20}" },
+            },
+            striped: {
+              backgroundColor: { value: "{colors.blue.10}" },
+            },
+          },
+          header: {
+            color: { value: "{colors.blue.80}" },
+            fontSize: { value: "{fontSizes.xl}" },
+          },
+          data: {
+            fontWeight: { value: "{fontWeights.semibold}" },
+          },
+        },
+      },
+    },
+  };
+
+
   return (
     <>
       <Card
@@ -270,8 +341,44 @@ function App({ signOut }) {
           </div>
 
         </form>
+          <div className='tableDiv'>
+              <ThemeProvider theme={theme} colorMode="light">
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        Sentiment
+                      </TableCell>
+                      <TableCell>
+                        Text
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
 
-       
+                  <TableBody>
+                  {     
+                    (gobjs.length > 0)?  
+                    (
+                      gobjs.map((gobj) => (
+                      <>
+                      <TableRow key={gobj.id}>
+                        <TableCell>
+                          {gobj.Sentiment}
+                        </TableCell>
+                        <TableCell>
+                          {gobj.Text}
+                        </TableCell>
+                      </TableRow>
+                      </>
+                    ))) :
+                    (<></>)
+                  }
+                  </TableBody>
+              </Table>
+              </ThemeProvider>
+
+            
+          </div>
 
         <div className='formDiv'>
           <Button onClick={signOut}>Sign Out</Button>
