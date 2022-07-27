@@ -55,6 +55,10 @@ code {
   text-align: center;
 }
 
+.fileInput{
+  font-size: 30px;
+}
+
 .uploadDiv{
   font-size: 20px;
   margin-bottom: 10%;
@@ -78,7 +82,13 @@ code {
 }
 
 .tableDiv{
-  /* max-width: 90%; */
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-
+.signOut {
+  font-size: 20px;
+  margin-bottom: 2%;
+  margin-top: 3%;
+}

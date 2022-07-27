@@ -228,6 +228,8 @@ function App({ signOut }) {
     },
   };
 
+  const [stretch, setStretch] = useState(false);
+
 
   return (
     <>
@@ -245,6 +247,7 @@ function App({ signOut }) {
           <input
             type="file"
             onChange={onChange}
+            className='fileInput'
         />
         <br/>
         <br/>
@@ -341,46 +344,71 @@ function App({ signOut }) {
           </div>
 
         </form>
-          <div className='tableDiv'>
-              <ThemeProvider theme={theme} colorMode="light">
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>
-                        Sentiment
-                      </TableCell>
-                      <TableCell>
-                        Text
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
 
-                  <TableBody>
-                  {     
-                    (gobjs.length > 0)?  
-                    (
-                      gobjs.map((gobj) => (
-                      <>
-                      <TableRow key={gobj.id}>
-                        <TableCell>
-                          {gobj.Sentiment}
-                        </TableCell>
-                        <TableCell>
-                          {gobj.Text}
-                        </TableCell>
-                      </TableRow>
-                      </>
-                    ))) :
-                    (<></>)
-                  }
-                  </TableBody>
-              </Table>
-              </ThemeProvider>
-
-            
+          {/* Show Stretch */}
+          <div className='formDiv'>
+            <Button onClick={() => setStretch(!stretch)}>{stretch? (<>HIDE</>):(<>SHOW</>)}</Button>
           </div>
 
-        <div className='formDiv'>
+          {stretch? (<>
+          <div className='tableDiv'>
+            <ThemeProvider theme={theme} colorMode="light">
+              <Table highlightOnHover variation="striped">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      Campaign ID
+                    </TableCell>
+                    <TableCell>
+                      Timestamp
+                    </TableCell>
+                    <TableCell>
+                      Twitter Handle
+                    </TableCell>
+                    <TableCell>
+                      Text
+                    </TableCell>
+                    <TableCell>
+                      Sentiment
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                {     
+                  (gobjs.length > 0)?  
+                  (
+                    gobjs.map((gobj) => (
+                    <>
+                    <TableRow key={gobj.id}>
+                      <TableCell>
+                        {gobj.Campaign_ID}
+                      </TableCell>
+                      <TableCell>
+                        {gobj.Timestamp}
+                      </TableCell>
+                      <TableCell>
+                        {gobj.Twitter_Handle}
+                      </TableCell>
+                      <TableCell>
+                        {gobj.Text}
+                      </TableCell>
+                      <TableCell>
+                        {gobj.Sentiment}
+                      </TableCell>
+                    </TableRow>
+                    </>
+                  ))) :
+                  (<></>)
+                }
+                </TableBody>
+            </Table>
+            </ThemeProvider>
+          </div>
+          </>): (<></>)}
+          
+
+        <div className='signOut'>
           <Button onClick={signOut}>Sign Out</Button>
         </div>
 
