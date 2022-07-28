@@ -12,6 +12,8 @@ import {
   Alert,
   ToggleButton,
   Flex,
+  Badge,
+  Text,
   Table,
   TableCell,
   TableHead,
@@ -21,6 +23,7 @@ import {
   Theme,
   TextAreaField,
   SelectField,
+  SwitchField,
   useTheme,
 } from "@aws-amplify/ui-react";
 
@@ -230,6 +233,7 @@ function App({ signOut }) {
 
   const [stretch, setStretch] = useState(false);
 
+  const { tokens } = useTheme();
 
   return (
     <>
@@ -244,111 +248,127 @@ function App({ signOut }) {
       <div className='mainContent'>
         {/* Upload Image */}
         <div className='uploadDiv'>
-          <input
+
+        {/* Inputs */}
+        <form onSubmit={Comment}>
+          <Grid
+          templateColumns="1fr 1fr"
+          templateRows="30rem 10rem"
+          gap={tokens.space.small}
+        >
+          <View>
+            <Heading level={4}>Comment Metadata</Heading> 
+            <div className='formDiv'>
+              {/* Campaign ID */}
+              <input
+                required
+                className='input'
+                onChange={e => setCid(e.target.value)}
+                placeholder="Campaign ID"
+                value={cid}
+              />
+            </div>
+            <div className='formDiv'>
+              {/* Timestamp */}
+              <input
+                required
+                className='input'
+                onChange={e => setTimestamp(e.target.value)}
+                placeholder="Timestamp"
+                value={timestamp}
+              />
+            </div>
+            <div className='formDiv'>
+              {/* Twitter Handle */}
+              <input
+                required
+                className='input'
+                onChange={e => setThand(e.target.value)}
+                placeholder="Twitter Handle"
+                value={thand}
+              />
+            </div>
+            <div className='formDiv'>
+              {/* First Name */}
+              <input
+                required
+                className='input'
+                onChange={e => setFname(e.target.value)}
+                placeholder="First Name"
+                value={fname}
+              />
+            </div>
+            <div className='formDiv'>
+              {/* Last Name */}
+              <input
+                required
+                className='input'
+                onChange={e => setLname(e.target.value)}
+                placeholder="Last Name"
+                value={lname}
+              />
+            </div>
+            <div className='formDiv'>
+              {/* Date of Birth */}
+              <input
+                required
+                className='input'
+                onChange={e => setDob(e.target.value)}
+                placeholder="Date of Birth"
+                value={dob}
+              />
+            </div>
+            <div className='formDiv'>
+              {/* Region */}
+              <input
+                required
+                className='input'
+                onChange={e => setRegion(e.target.value)}
+                placeholder="Region"
+                value={region}
+              />
+            </div>
+
+            {/* Submit button */}
+            <div className='formDiv'>
+              <Button type='submit'>SUBMIT</Button>
+            </div>
+          </View>
+          <View>
+            <Heading level={4}>Comment Text</Heading> 
+            <div className='formDiv'>
+              {/* Text */}
+              <TextareaAutosize
+                  className='responsiveTA input'
+                  placeholder="Text"
+                  onChange={e => setText(e.target.value)}
+                  value={text}
+                />
+            </div>
+            <Heading level={4}>Comment Image (Optional)</Heading> 
+            <input
             type="file"
             onChange={onChange}
             className='fileInput'
-        />
-        <br/>
-        <br/>
+            />
+            <br/>
+            <br/>
+          </View>
 
-        {/* Inputs */}
-        <Heading level={4}>Comment Metadata</Heading> 
-
-        <form onSubmit={Comment}>
-          <div className='formDiv'>
-            {/* Campaign ID */}
-            <input
-              required
-              className='input'
-              onChange={e => setCid(e.target.value)}
-              placeholder="Campaign ID"
-              value={cid}
-            />
-          </div>
-          <div className='formDiv'>
-            {/* Timestamp */}
-            <input
-              required
-              className='input'
-              onChange={e => setTimestamp(e.target.value)}
-              placeholder="Timestamp"
-              value={timestamp}
-            />
-          </div>
-          <div className='formDiv'>
-            {/* Twitter Handle */}
-            <input
-              required
-              className='input'
-              onChange={e => setThand(e.target.value)}
-              placeholder="Twitter Handle"
-              value={thand}
-            />
-          </div>
-          <div className='formDiv'>
-            {/* First Name */}
-            <input
-              required
-              className='input'
-              onChange={e => setFname(e.target.value)}
-              placeholder="First Name"
-              value={fname}
-            />
-          </div>
-          <div className='formDiv'>
-            {/* Last Name */}
-            <input
-              required
-              className='input'
-              onChange={e => setLname(e.target.value)}
-              placeholder="Last Name"
-              value={lname}
-            />
-          </div>
-          <div className='formDiv'>
-            {/* Date of Birth */}
-            <input
-              required
-              className='input'
-              onChange={e => setDob(e.target.value)}
-              placeholder="Date of Birth"
-              value={dob}
-            />
-          </div>
-          <div className='formDiv'>
-            {/* Region */}
-            <input
-              required
-              className='input'
-              onChange={e => setRegion(e.target.value)}
-              placeholder="Region"
-              value={region}
-            />
-          </div>
-
-          <Heading level={4}>Comment Text</Heading> 
-          <div className='formDiv'>
-            {/* Text */}
-             <TextareaAutosize
-                className='responsiveTA input'
-                placeholder="Text"
-                onChange={e => setText(e.target.value)}
-                value={text}
-              />
-          </div>
-
-          {/* Submit button */}
-          <div className='formDiv'>
-            <Button type='submit'>SUBMIT</Button>
-          </div>
-
+        </Grid>
         </form>
 
-          {/* Show Stretch */}
-          <div className='formDiv'>
-            <Button onClick={() => setStretch(!stretch)}>{stretch? (<>HIDE</>):(<>SHOW</>)}</Button>
-          </div>
+
+        {/* Show Stretch */}
+        <div className=''>
+          <Button className='signOut' onClick={() => setStretch(!stretch)}>{stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}</Button>
+          {/* <SwitchField
+            label={stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}
+            // labelPosition="start"
+            value='test'
+            onChange={() => setStretch(!stretch)}
+          /> */}
+        </div>
 
           {stretch? (<>
           <div className='tableDiv'>
