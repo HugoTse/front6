@@ -235,6 +235,11 @@ function App({ signOut }) {
 
   const { tokens } = useTheme();
 
+  async function changeStretch(){
+    setStretch(!stretch);
+    fetchGobjs();
+  }
+
   return (
     <>
       <Card
@@ -256,8 +261,29 @@ function App({ signOut }) {
           templateRows="30rem 10rem"
           gap={tokens.space.small}
         >
+            <View>
+            <Heading level={4}>Comment Text</Heading> 
+            <div className='formDiv'>
+              {/* Text */}
+              <TextareaAutosize
+                  className='responsiveTA input'
+                  placeholder="Text"
+                  onChange={e => setText(e.target.value)}
+                  value={text}
+                />
+            </div>
+            <Heading level={4}>Comment Image (Optional)</Heading> 
+            <input
+            type="file"
+            onChange={onChange}
+            className='fileInput'
+            />
+            <br/>
+            <br/>
+          </View>
+
           <View>
-            <Heading level={4}>Comment Metadata</Heading> 
+            <Heading level={4}>Configure Comment Metadata</Heading> 
             <div className='formDiv'>
               {/* Campaign ID */}
               <input
@@ -271,7 +297,7 @@ function App({ signOut }) {
             <div className='formDiv'>
               {/* Timestamp */}
               <input
-                required
+                // required
                 className='input'
                 onChange={e => setTimestamp(e.target.value)}
                 placeholder="Timestamp"
@@ -334,26 +360,6 @@ function App({ signOut }) {
               <Button type='submit'>SUBMIT</Button>
             </div>
           </View>
-          <View>
-            <Heading level={4}>Comment Text</Heading> 
-            <div className='formDiv'>
-              {/* Text */}
-              <TextareaAutosize
-                  className='responsiveTA input'
-                  placeholder="Text"
-                  onChange={e => setText(e.target.value)}
-                  value={text}
-                />
-            </div>
-            <Heading level={4}>Comment Image (Optional)</Heading> 
-            <input
-            type="file"
-            onChange={onChange}
-            className='fileInput'
-            />
-            <br/>
-            <br/>
-          </View>
 
         </Grid>
         </form>
@@ -361,7 +367,7 @@ function App({ signOut }) {
 
         {/* Show Stretch */}
         <div className=''>
-          <Button className='signOut' onClick={() => setStretch(!stretch)}>{stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}</Button>
+          <Button className='signOut' onClick={() => changeStretch()}>{stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}</Button>
           {/* <SwitchField
             label={stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}
             // labelPosition="start"
