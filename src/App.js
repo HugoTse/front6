@@ -25,6 +25,7 @@ import {
   SelectField,
   SwitchField,
   useTheme,
+  Divider
 } from "@aws-amplify/ui-react";
 
 import { Amplify, API, Storage } from 'aws-amplify';
@@ -77,6 +78,8 @@ function App({ signOut }) {
       .then((result) => alert(JSON.parse(result).body))
       .catch((error) => console.log("error", error));
     // alert('your file has been uploaded');
+    // Show the user a preview
+    document.getElementById('imageupload').src = window.URL.createObjectURL(file);
   }
 
   // For submitting the comment
@@ -254,14 +257,15 @@ function App({ signOut }) {
         {/* Upload Image */}
         <div className='uploadDiv'>
 
+        
+
         {/* Inputs */}
         <form onSubmit={Comment}>
-          <Grid
-          templateColumns="1fr 1fr"
-          templateRows="30rem 10rem"
-          gap={tokens.space.small}
-        >
+
             <View>
+            <Heading level={4}>Social Media Comment Creator</Heading> 
+            <br/>
+
             <Heading level={4}>Comment Text</Heading> 
             <div className='formDiv'>
               {/* Text */}
@@ -273,6 +277,9 @@ function App({ signOut }) {
                 />
             </div>
             <Heading level={4}>Comment Image (Optional)</Heading> 
+
+            <img id="imageupload" alt="your image" width="400" height="400" src="imageupload.jpeg"/>
+            
             <input
             type="file"
             onChange={onChange}
@@ -280,9 +287,6 @@ function App({ signOut }) {
             />
             <br/>
             <br/>
-          </View>
-
-          <View>
             <Heading level={4}>Configure Comment Metadata</Heading> 
             <div className='formDiv'>
               {/* Campaign ID */}
@@ -361,12 +365,12 @@ function App({ signOut }) {
             </div>
           </View>
 
-        </Grid>
         </form>
 
 
+
         {/* Show Stretch */}
-        <div className=''>
+        <div className='showHistory'>
           <Button className='signOut' onClick={() => changeStretch()}>{stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}</Button>
           {/* <SwitchField
             label={stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}
