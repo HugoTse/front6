@@ -10,7 +10,6 @@ import {
   Grid,
   TextField,
   Alert,
-  ToggleButton,
   Flex,
   Badge,
   Text,
@@ -25,13 +24,13 @@ import {
   SelectField,
   SwitchField,
   useTheme,
-  Divider
+  Divider,
+  ToggleButton
 } from "@aws-amplify/ui-react";
 
-import { Amplify, API, Storage } from 'aws-amplify';
+import { Amplify, API, Auth, Hub, Storage } from 'aws-amplify';
 import React, { useState, useEffect } from "react";
 import TextareaAutosize from 'react-textarea-autosize';
-
 
 function App({ signOut }) {
   const[cid, setCid] = useState('');
@@ -44,6 +43,7 @@ function App({ signOut }) {
   const[text, setText] = useState('');
   const[ir, setIr] = useState('');
 
+  
   // For uploadImage
   async function onChange(e) {
     e.preventDefault();
@@ -79,7 +79,7 @@ function App({ signOut }) {
       .catch((error) => console.log("error", error));
     // alert('your file has been uploaded');
     // Show the user a preview
-    document.getElementById('imageupload').src = window.URL.createObjectURL(file);
+    document.getElementById('preview').src = window.URL.createObjectURL(file);
   }
 
   // For submitting the comment
@@ -176,36 +176,33 @@ function App({ signOut }) {
     setIr('');
   }
 
+  const [records, setRecords] = useState([]);
 
-  // For Gobjs
-  const [gobjs, setGobjs] = useState([]);
 
-  // Fetch the gobjs in the table
-  async function fetchGobjs(){
+  // Fetch the records in the table
+  async function fetchRecords(){
     const headers = {
       "Content-Type": "application, json",
     }
     const apiResponse = await fetch('https://sku06p2ar3.execute-api.us-west-2.amazonaws.com/v0/read', {headers} )
     const apiResponseJSON = await apiResponse.json()
-    const gs = apiResponseJSON.body
-    // console.log(apiResponseJSON)
-    console.log(gs)
-    setGobjs([...gs])
+    const rs = apiResponseJSON.body
+    console.log(rs)
+    setRecords([...rs])
   }
-  // Fetch the gobjs in the table: UseEffect
+  // Fetch the records in the table: UseEffect
   useEffect(() => { 
-    async function fetc(){
+    async function fetchRecords(){
       const headers = {
         "Content-Type": "application, json",
       }
       const apiResponse = await fetch('https://sku06p2ar3.execute-api.us-west-2.amazonaws.com/v0/read', {headers} )
       const apiResponseJSON = await apiResponse.json()
-      const gs = apiResponseJSON.body
-      // console.log(apiResponseJSON)
-      console.log("This is gs: " + gs)
-      setGobjs([...gs])
+      const rs = apiResponseJSON.body
+      console.log("This is rs: " + rs)
+      setRecords([...rs])
     }
-    fetc()
+    fetchRecords()
   }, []);
 
   // Table Theme
@@ -233,14 +230,19 @@ function App({ signOut }) {
       },
     },
   };
-
-  const [stretch, setStretch] = useState(false);
-
   const { tokens } = useTheme();
 
+  // For showing the history
+  const [stretch, setStretch] = useState(false);
   async function changeStretch(){
     setStretch(!stretch);
-    fetchGobjs();
+    fetchRecords();
+  }
+
+  // For autogenerating timestamp
+  const [autotime, setAutotime] = useState(false);
+  async function changeAutotime(){
+    setAutotime(!autotime);
   }
 
   return (
@@ -248,37 +250,37 @@ function App({ signOut }) {
       <Card
         columnStart="1"
         columnEnd="-1"
+        style={{backgroundColor: 'black'}}
       >
-       <Heading level={1}>Nautilus Marketing: Detecting Sentiment</Heading> 
+       <Heading level={1} style={{color: 'white'}} ><b>Nautilus Marketing</b> <br/> Detecting Sentiment</Heading> 
       </Card>
 
       <br/>
       <div className='mainContent'>
-        {/* Upload Image */}
-        <div className='uploadDiv'>
 
+
+        <div id='commentAnalyzer'>
         
-
         {/* Inputs */}
         <form onSubmit={Comment}>
 
             <View>
-            <Heading level={4}>Social Media Comment Creator</Heading> 
+            <Heading level={3}>Social Media Comment Analyzer</Heading> 
             <br/>
 
-            <Heading level={4}>Comment Text</Heading> 
+            <Heading level={4}><i>Comment Text</i></Heading> 
             <div className='formDiv'>
               {/* Text */}
               <TextareaAutosize
                   className='responsiveTA input'
-                  placeholder="Text"
+                  placeholder="Input your comment text here..."
                   onChange={e => setText(e.target.value)}
                   value={text}
                 />
             </div>
-            <Heading level={4}>Comment Image (Optional)</Heading> 
+            <Heading level={4}><i>Comment Image (Optional)</i></Heading> 
 
-            <img id="imageupload" alt="your image" width="400" height="400" src="imageupload.jpeg"/>
+            <img id="preview" alt="your image" width="350" height="350" src="imageupload.jpeg"/>
             <div>
               <input
               type="file"
@@ -286,10 +288,10 @@ function App({ signOut }) {
               className='fileInput'
               />
             </div>
-         
+
             <br/>
             <br/>
-            <Heading level={4}>Configure Comment Metadata</Heading> 
+            <Heading level={4}><i>Configure Comment Metadata</i></Heading> 
             <div className='formDiv'>
               {/* Campaign ID */}
               <input
@@ -301,15 +303,24 @@ function App({ signOut }) {
               />
             </div>
             <div className='formDiv'>
+              <ToggleButton onClick={() => changeAutotime()}>
+                {!autotime? (<>
+                  Click To Use Automatic Timestamp
+                </>):(<>Automatic Timestamp</>)}
+              </ToggleButton>
+            </div>
+            {!autotime? (<>
+              <div className='formDiv'>
               {/* Timestamp */}
               <input
-                // required
                 className='input'
                 onChange={e => setTimestamp(e.target.value)}
                 placeholder="Timestamp"
                 value={timestamp}
               />
             </div>
+            </>):(<></>)} 
+           
             <div className='formDiv'>
               {/* Twitter Handle */}
               <input
@@ -363,23 +374,21 @@ function App({ signOut }) {
 
             {/* Submit button */}
             <div className='formDiv'>
-              <Button type='submit'>SUBMIT</Button>
+              <Button type='submit' variation='primary' size="large">Analyze Comment</Button>
             </div>
           </View>
-
         </form>
-
-
+        </div>
+        
+        <Divider/>
 
         {/* Show Stretch */}
         <div className='showHistory'>
-          <Button className='signOut' onClick={() => changeStretch()}>{stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}</Button>
-          {/* <SwitchField
-            label={stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}
-            // labelPosition="start"
-            value='test'
-            onChange={() => setStretch(!stretch)}
-          /> */}
+          <Button className='signOut' 
+                  style={{backgroundColor: 'green', color: 'white'}} 
+                  size="large" onClick={() => changeStretch()}>
+            {stretch? (<>HIDE HISTORY</>):(<>SHOW HISTORY</>)}
+          </Button>
         </div>
 
           {stretch? (<>
@@ -408,25 +417,25 @@ function App({ signOut }) {
 
                 <TableBody>
                 {     
-                  (gobjs.length > 0)?  
+                  (records.length > 0)?  
                   (
-                    gobjs.map((gobj) => (
+                    records.map((record) => (
                     <>
-                    <TableRow key={gobj.id}>
+                    <TableRow key={record.id}>
                       <TableCell>
-                        {gobj.Campaign_ID}
+                        {record.Campaign_ID}
                       </TableCell>
                       <TableCell>
-                        {gobj.Timestamp}
+                        {record.Timestamp}
                       </TableCell>
                       <TableCell>
-                        {gobj.Twitter_Handle}
+                        {record.Twitter_Handle}
                       </TableCell>
                       <TableCell>
-                        {gobj.Text}
+                        {record.Text}
                       </TableCell>
                       <TableCell>
-                        {gobj.Sentiment}
+                        {record.Sentiment}
                       </TableCell>
                     </TableRow>
                     </>
@@ -438,17 +447,12 @@ function App({ signOut }) {
             </ThemeProvider>
           </div>
           </>): (<></>)}
-          
 
         <div className='signOut'>
-          <Button onClick={signOut}>Sign Out</Button>
+          <Button onClick={signOut} style={{backgroundColor: 'pink'}} size='large'>Sign Out</Button>
         </div>
-
-      </div>
-    
       </div>
    
-
     </>
 
 
