@@ -279,12 +279,14 @@ function App({ signOut }) {
             <Heading level={4}>Comment Image (Optional)</Heading> 
 
             <img id="imageupload" alt="your image" width="400" height="400" src="imageupload.jpeg"/>
-            
-            <input
-            type="file"
-            onChange={onChange}
-            className='fileInput'
-            />
+            <div>
+              <input
+              type="file"
+              onChange={onChange}
+              className='fileInput'
+              />
+            </div>
+         
             <br/>
             <br/>
             <Heading level={4}>Configure Comment Metadata</Heading> 
